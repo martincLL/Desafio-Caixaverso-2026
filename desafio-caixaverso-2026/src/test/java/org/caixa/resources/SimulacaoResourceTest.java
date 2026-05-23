@@ -3,8 +3,8 @@ package org.caixa.resources;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import jakarta.ws.rs.NotFoundException;
 import org.caixa.dtos.SimulacaoResponseDTO;
+import org.caixa.exceptions.SimulacaoNaoEncontradaException;
 import org.caixa.services.SimulacaoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,9 +50,9 @@ public class SimulacaoResourceTest {
     @DisplayName("Deve retornar Status 404 (NOT FOUND) ao buscar um id que não existe")
     void deveRetornar404AoBuscarIdInexistente() {
         Mockito.when(simulacaoService.buscarSimulacaoPorId(77L))
-                .thenThrow(new NotFoundException("Simulação não encontrada"));
+                .thenThrow(new SimulacaoNaoEncontradaException("Simulação não encontrada"));
 
-        given().when().get("/simulacoes/77").then().statusCode(404);
+        given().when().get("/simulacoes/77").then().statusCode(404).body("status", is(404));
     }
 
     @Test
@@ -83,6 +83,6 @@ public class SimulacaoResourceTest {
                 }
                 """;
 
-        given().contentType(ContentType.JSON).body(jsonInvalido).when().post("/simulacoes").then().statusCode(400);
+        given().contentType(ContentType.JSON).body(jsonInvalido).when().post("/simulacoes").then().statusCode(400).body("status", is(400));
     }
 }

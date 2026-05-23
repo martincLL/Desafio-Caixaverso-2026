@@ -9,6 +9,7 @@ import org.caixa.dtos.SimulacaoRequestDTO;
 import org.caixa.dtos.SimulacaoResponseDTO;
 import org.caixa.entities.MemoriaCalculo;
 import org.caixa.entities.Simulacao;
+import org.caixa.exceptions.SimulacaoNaoEncontradaException;
 import org.caixa.repositories.SimulacaoRepository;
 
 import java.math.BigDecimal;
@@ -30,7 +31,7 @@ public class SimulacaoService {
     }
 
     public SimulacaoResponseDTO buscarSimulacaoPorId(Long id) {
-        Simulacao simulacao = simulacaoRepository.findByIdOptional(id).orElseThrow(() -> new NotFoundException("Simulação não encontrada"));
+        Simulacao simulacao = simulacaoRepository.findByIdOptional(id).orElseThrow(() -> new SimulacaoNaoEncontradaException("Simulação não encontrada"));
         return entidadeParaDTO(simulacao);
     }
 
