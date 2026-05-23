@@ -1,79 +1,81 @@
-# desafio-caixaverso-2026
+# Desafio Técnico: Simulador de Financiamentos - Caixaverso 2026
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Este repositório contém o backend de uma API RESTful para simulação de financiamentos e investimentos, desenvolvida com precisão matemática nas simulações, arquitetura Spec-Driven e testes automatizados. O projeto foi construído em conformidade com as diretrizes e critérios de avaliação do edital.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+Link do Projeto no GitHub: [Desafio Caixaverso 2026](https://github.com/martincLL/Desafio-Caixaverso-2026/tree/main)
 
-## Running the application in dev mode
+---
 
-You can run your application in dev mode that enables live coding using:
+## Stacks Tecnológicas Utilizadas
 
-```shell script
-./mvnw quarkus:dev
+* **Linguagem:** Java 25
+* **Framework:** Quarkus
+* **Base de Dados:** H2 Database — Executado de forma 100% nativa, sem necessidade de Docker ou scripts SQL manuais.
+* **Precisão Matemática:** Uso sistemático de BigDecimal para evitar erros de arredondamento em cálculos de juros compostos.
+* **Testes & Cobertura:** JUnit 5, Mockito, REST Assured e Jacoco para relatórios de cobertura.
+* **Documentação & Spec-Driven:** OpenAPI / SmallRye OpenAPI (Swagger UI).
+
+---
+
+## Seed Inicial de Dados Automático (Protegido contra Testes)
+
+Para garantir que a API forneça dados imediatamente após a inicialização, o projeto implementa uma classe de carga automatizada (`SeedDadosIniciais`) acionada pelo evento `StartupEvent` do Quarkus.
+
+Assim que o servidor de desenvolvimento é iniciado, o banco de dados H2 é populado automaticamente com 5 simulações completas e variadas, cobrindo diferentes cenários de negócios (valores, taxas e prazos distintos).
+
+Isolamento de Testes (Sem interferência no clean verify): O seed utiliza a anotação `@UnlessBuildProfile("test")`. Isso significa que, quando o comando de testes e verificação (`mvnw clean verify`) é acionado, o Quarkus ativa o perfil de teste (`test`) e ignora completamente a execução do Seed. O banco de dados inicia perfeitamente limpo e controlado, impedindo que dados pré-existentes quebrem as asserções de contagem ou integridade dos testes de integração.
+
+---
+
+## Como Executar a Aplicação (Modo de Desenvolvimento)
+
+A aplicação roda de maneira nativa localmente, dispensando o uso de contêineres Docker. Abra o terminal na raiz do projeto (onde está o arquivo `pom.xml`) e execute o comando correspondente ao seu sistema operacional:
+
+### No Windows (PowerShell / CMD):
+```powershell
+.\mvnw.cmd quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+Após o boot completo do framework, a mensagem confirmando a execução do seed de dados será exibida no terminal e as 5 simulações prontas estarão disponíveis para consulta.
 
-## Packaging and running the application
+---
 
-The application can be packaged using:
+## Documentação da API & Contratos (OpenAPI/Swagger UI)
 
-```shell script
-./mvnw package
-```
+Alinhado ao pilar de Spec-Driven Development, todos os contratos e payloads (sucessos 201/200 e erros 400/404) foram  documentados na classe de controller utilizando anotações nativas do MicroProfile OpenAPI.
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Com a aplicação rodando em modo de desenvolvimento, você pode testar todas as rotas interativamente acessando a interface do Swagger pelo navegador:
+[http://localhost:8080/q/swagger-ui](http://localhost:8080/q/swagger-ui)
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+### Endpoints Disponíveis:
+* `POST /simulacoes` - Cria uma nova simulação (calcula juros compostos mês a mês e gera memória de cálculo).
+* `GET /simulacoes` - Retorna a lista de todas as simulações cadastradas (incluindo as 5 geradas pelo Seed).
+* `GET /simulacoes/{id}` - Retorna os detalhes e a evolução completa de uma simulação específica via parâmetro de rota.
 
-If you want to build an _über-jar_, execute the following command:
+---
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
+## Como Executar a Suíte de Testes e Validar a Cobertura
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+O projeto conta com uma suíte de testes dividida em duas categorias:
+1. **Testes Unitários:** Isolam a lógica matemática e os fluxos de serviço utilizando dublês de teste (`@InjectMock`).
+2. **Testes de Integração:** Validam o fluxo completo de ponta a ponta (`@QuarkusTest` + `REST Assured`), interagindo diretamente com as rotas HTTP e persistindo no banco H2 real de testes (sem qualquer interferência do Seed).
 
-## Creating a native executable
+Para executar todos os testes, gerar os relatórios de cobertura do Jacoco e certificar que a barreira eliminatória de 80% de cobertura foi superada, execute a verificação:
 
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/desafio-caixaverso-2026-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- JDBC Driver - H2 ([guide](https://quarkus.io/guides/datasource)): Connect to the H2 database via JDBC
-- SmallRye OpenAPI ([guide](https://quarkus.io/guides/openapi-swaggerui)): Generate OpenAPI schemas and serve Swagger UI for REST API documentation
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplified JPA/Hibernate data access layer with active record and repository patterns
-
-## Provided Code
-
-### Hibernate ORM
-
-Create your first JPA entity
-
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
+### No Windows (PowerShell / CMD):
+`.\mvnw.cmd clean verify`
 
 
-[Related Hibernate with Panache section...](https://quarkus.io/guides/hibernate-orm-panache)
+### Visualizando o Relatório do Jacoco:
+Após o término com sucesso do build (BUILD SUCCESS), o relatório visual detalhado pode ser visualizado abrindo o arquivo abaixo em qualquer navegador:
+`target/jacoco-report/index.html`
 
+---
 
-### REST
+## Organização de Código e Clean Code
 
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+O projeto segue o padrão arquitetural em camadas recomendado (Resource -> Service -> Repository) para evitar o acoplamento de lógica de negócios nos controladores:
+* **Resource (Controller):** Expõe os endpoints REST e centraliza as anotações do Swagger.
+* **Service:** Centraliza o motor de cálculo financeiro e as regras de negócio.
+* **Repository:** Gerencia o acesso e persistência dos dados no H2.
+* **ExceptionMapper:** Intercepta exceções globais e de validação, impedindo que erros internos de validação estourem HTTP 500 e garantindo o retorno limpo de payloads de erro estruturados com os status HTTP 400 ou HTTP 404.
