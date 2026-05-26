@@ -5,17 +5,29 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
+@Table(name = "tb_memoriacalculo")
 public class MemoriaCalculo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
+
+    @Column(name = "mes", nullable = false)
     private Integer mes;
+
+    @Column(name = "saldo_inicial", precision = 15, scale = 2, nullable = false)
     private BigDecimal saldoInicial;
+
+    @Column(name = "juro_aplicado", precision = 15, scale = 2, nullable = false)
     private BigDecimal juroAplicado;
+
+    @Column(name = "valor_final", precision = 15, scale = 2, nullable = false)
     private BigDecimal valorFinal;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "simulacao_id")
+    @JoinColumn(name = "simulacao_id", nullable = false)
     private Simulacao simulacao;
 
     public MemoriaCalculo() {

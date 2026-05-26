@@ -7,16 +7,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "tb_simulacao")
 public class Simulacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_simulacao", updatable = false, nullable = false)
     private Long id;
+
+    @Column(name = "valor_inicial", precision = 15, scale = 2, nullable = false)
     private BigDecimal valorInicial;
+
+    @Column(name = "taxa_juros_mensal", precision = 15, scale = 4, nullable = false)
     private BigDecimal taxaJurosMensal;
+
+    @Column(name = "prazo_meses", nullable = false)
     private Integer prazoMeses;
+
+    @Column(name = "valor_final", precision = 15, scale = 2)
     private BigDecimal valorFinal;
+
+    @Column(name = "valor_total_juros", precision = 15, scale = 2)
     private BigDecimal valorTotalJuros;
+
     @OneToMany(mappedBy = "simulacao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemoriaCalculo> memoriaCalculo = new ArrayList<>();
 
