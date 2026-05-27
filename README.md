@@ -86,8 +86,6 @@ O projeto segue o padrão arquitetural em camadas recomendado (Resource -> Servi
 
 Este repositório contém o backend de uma API RESTful para simulação de financiamentos e investimentos, desenvolvida com precisão matemática nas simulações, arquitetura Spec-Driven e testes automatizados. O projeto foi construído em conformidade com as diretrizes e critérios de avaliação do edital.
 
-Link do Projeto no GitHub: [Desafio Caixaverso 2026](https://github.com/martincLL/Desafio-Caixaverso-2026/tree/main)
-
 ---
 
 ## Stacks Tecnológicas Utilizadas
